@@ -3,8 +3,10 @@
  *
  * Rows are snake_case in Postgres and camelCase in the app; the two mapping
  * functions below are the only place that knows both. Audio lives in the
- * private `audio` bucket under <user_id>/<id>.<ext>; `audioId` on a dump is
- * that storage path.
+ * `audio` bucket under shared/<id>.<ext>; `audioId` on a dump is that path.
+ *
+ * No sign-in for now (see supabase/migrations/0002_open_access.sql): the
+ * publishable key alone reads and writes everything.
  */
 import { getSupabase } from "./supabase";
 import type { AudioClip, BrainDump, DumpSource, DumpStatus, LibraryItem, LibraryKind, LibraryStatus } from "./types";
@@ -15,11 +17,8 @@ function client() {
   return s;
 }
 
-async function userId(): Promise<string> {
-  const { data, error } = await client().auth.getUser();
-  if (error || !data.user) throw new Error("Not signed in.");
-  return data.user.id;
-}
+/** Folder inside the audio bucket. One folder while there is no sign-in. */
+const AUDIO_FOLDER = "shared";
 
 // ---- Row shapes -----------------------------------------------------------
 
@@ -162,8 +161,7 @@ function extFor(mime: string): string {
 
 /** Uploads a recording and returns its storage path (store that as audioId). */
 export async function putAudio(clip: AudioClip): Promise<string> {
-  const uid = await userId();
-  const path = `${uid}/${clip.id}.${extFor(clip.mimeType)}`;
+  const path = `${AUDIO_FOLDER}/${clip.id}.${extFor(clip.mimeType)}`;
   const { error } = await client().storage.from("audio").upload(path, clip.blob, {
     contentType: clip.mimeType || "application/octet-stream",
     upsert: true,
@@ -203,12 +201,11 @@ export async function importAll(data: { dumps?: BrainDump[]; library?: LibraryIt
 }
 
 export async function wipeAll(): Promise<void> {
-  const uid = await userId();
   const s = client();
-  const { data: files } = await s.storage.from("audio").list(uid, { limit: 1000 });
-  if (files?.length) await s.storage.from("audio").remove(files.map((f) => `${uid}/${f.name}`));
-  const a = await s.from("brain_dumps").delete().eq("user_id", uid);
+  const { data: files } = await s.storage.from("audio").list(AUDIO_FOLDER, { limit: 1000 });
+  if (files?.length) await s.storage.from("audio").remove(files.map((f) => `${AUDIO_FOLDER}/${f.name}`));
+  const a = await s.from("brain_dumps").delete().not("id", "is", null);
   if (a.error) throw a.error;
-  const b = await s.from("library_items").delete().eq("user_id", uid);
+  const b = await s.from("library_items").delete().not("id", "is", null);
   if (b.error) throw b.error;
 }

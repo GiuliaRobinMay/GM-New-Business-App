@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { SignOutButton } from "@/components/AuthGate";
 import { Toast, useToast } from "@/components/ui";
 import { getAudio, importAll, listDumps, listLibrary, putAudio, putDump, putLibraryItem, wipeAll } from "@/lib/db";
 import * as local from "@/lib/localdb";
@@ -143,7 +142,7 @@ export default function ExportPage() {
 
   const wipe = () =>
     run("wipe", async () => {
-      if (!window.confirm("Delete everything in your account? Export first if you have not.")) return "Kept";
+      if (!window.confirm("Delete everything in Supabase? Export first if you have not.")) return "Kept";
       await wipeAll();
       return "Wiped";
     });
@@ -228,11 +227,10 @@ export default function ExportPage() {
       )}
 
       <section className="card card--pad">
-        <p className="eyebrow">Account</p>
+        <p className="eyebrow">Everything</p>
         <p className="section-title mt-2">Start over</p>
-        <p className="muted mt-2">Deletes every dump, source and recording in your Supabase account. The repo is untouched.</p>
+        <p className="muted mt-2">Deletes every dump, source and recording in Supabase. The repo is untouched.</p>
         <div className="row mt-4">
-          <SignOutButton className="btn btn--ghost" />
           <button className="btn btn--danger" onClick={wipe} disabled={busy !== null}>
             Delete everything
           </button>

@@ -25,8 +25,8 @@ cp .env.example .env.local   # then paste your Supabase URL + anon key
 npm run dev                  # http://localhost:3000
 ```
 
-First time: follow `supabase/README.md` (create project, run the schema,
-make your account). Ten minutes, once.
+First time: follow `supabase/README.md` (create project, run the two SQL
+files, paste the keys). Ten minutes, once.
 
 `npm run build` writes a static site to `app/out/`. Host that folder anywhere
 (it lives on Vercel: root directory `app`, framework Next.js) with the same
@@ -44,9 +44,10 @@ not transcribe — you still get the text box.
 
 ## Where the data lives
 
-In **Supabase**: two tables (`brain_dumps`, `library_items`) and a private
-`audio` bucket for recordings, all behind row-level security so only your
-account can read them. Sign in on any device and it is all there.
+In **Supabase**: two tables (`brain_dumps`, `library_items`) and an `audio`
+bucket for recordings. There is no sign-in — open the link on any device
+and it is all there. That also means anyone with the link can read and
+write; fine for a private tool, something to revisit before sharing it.
 
 **Export** is how it gets into the repo, where Claude works with it:
 

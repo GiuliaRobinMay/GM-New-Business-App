@@ -47,8 +47,11 @@ node scripts/make-icons.mjs   # only after changing the brand colour
 - Needs `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`
   (`app/.env.local`, never committed). Without them the app renders a
   setup card instead of crashing.
-- Auth is email + password (`src/components/AuthGate.tsx`); row-level
-  security in `supabase/migrations/0001_init.sql` does the protecting.
+- **No sign-in** (Giulia's decision, 2026-09-17). `0002_open_access.sql`
+  lets the publishable key read and write everything; `AuthGate.tsx` only
+  checks that Supabase is configured. Do not add auth back unless asked;
+  when asked, the email + password LoginCard is in git history (commit
+  a2d292a).
 - Schema changes: add a new numbered file under `supabase/migrations/`,
   never edit `0001_init.sql` after it has run somewhere.
 - No Tailwind. Plain CSS. `app/src/app/globals.css` imports

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import { accentFor } from "@/lib/accent";
-import AuthGate, { SignOutButton } from "./AuthGate";
+import AuthGate from "./AuthGate";
 import { BookIcon, DownloadIcon, GridIcon, InboxIcon, MicIcon } from "./Icons";
 import ServiceWorker from "./ServiceWorker";
 
@@ -43,9 +43,8 @@ export default function Shell({ children }: { children: ReactNode }) {
             </Link>
           ))}
         </nav>
-        <div style={{ marginTop: "auto", padding: 16 }} className="row">
-          <p className="help grow">Saved to Supabase.</p>
-          <SignOutButton className="btn btn--quiet" />
+        <div style={{ marginTop: "auto", padding: 16 }}>
+          <p className="help">Saved to Supabase. Same on every device.</p>
         </div>
       </aside>
 

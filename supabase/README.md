@@ -13,11 +13,13 @@ Setting one up takes about ten minutes, once.
 ## 2. Run the schema
 
 Dashboard → **SQL Editor** → **New query** → paste the whole of
-[`migrations/0001_init.sql`](migrations/0001_init.sql) → **Run**.
+[`migrations/0001_init.sql`](migrations/0001_init.sql) → **Run**. Then the
+same with [`migrations/0002_open_access.sql`](migrations/0002_open_access.sql).
 
-That creates two tables (`brain_dumps`, `library_items`), a private `audio`
-bucket, and row-level-security policies so only the signed-in user can see
-their own data.
+`0001` creates two tables (`brain_dumps`, `library_items`) and an `audio`
+bucket. `0002` opens them up so the app works **without sign-in** — anyone
+with the app link can read and write. Deliberate for now (personal tool,
+one person); revisit before sharing the link with anyone.
 
 ## 3. Get the two keys
 
@@ -30,17 +32,7 @@ Put them in `app/.env.local` (copy `app/.env.example`). For a hosted build
 (Netlify, Vercel) set the same two variables in the host's environment
 settings — they are baked in at build time.
 
-The anon key is safe to ship in the browser; row-level security is what
-protects the data, not the key.
-
-## 4. Make your account
-
-Open the app → **Create account** with your email and a password. Then, in
-the dashboard → **Authentication** → **Providers** → Email, turn off
-**Allow new users to sign up** so nobody else can register. If "Confirm
-email" is on, you will get one confirmation email first.
-
-## 5. Move the old local data (if any)
+## 4. Move the old local data (if any)
 
 If you already saved dumps in the v0.1 app on a device, open **Export** on
 that device → **Move local data to Supabase**. It uploads everything,
@@ -51,6 +43,7 @@ recordings included, and leaves the local copy until you clear it.
 | | |
 |---|---|
 | `migrations/0001_init.sql` | The schema. Idempotent — safe to run twice. |
+| `migrations/0002_open_access.sql` | Opens everything to the publishable key (no sign-in). |
 | `../app/src/lib/supabase.ts` | Client factory. |
 | `../app/src/lib/db.ts` | Every read and write the app makes. |
 | `../app/src/lib/localdb.ts` | The old IndexedDB store, kept only for migration. |
