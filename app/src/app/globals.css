@@ -1,0 +1,264 @@
+/* The look and feel lives in design/studiolo-theme.css. Do not restyle here;
+   this file only adds layout that the theme does not cover (phone shell,
+   record button, drawer). Same four colours, same hairline, same scale. */
+@import "../../../design/studiolo-theme.css";
+
+/* --------------------------------------------------------------------------
+   Layout helpers
+   -------------------------------------------------------------------------- */
+
+.row { display: flex; align-items: center; gap: 12px; }
+.row--top { align-items: flex-start; }
+.grow { flex: 1; min-width: 0; }
+.wrap { display: flex; flex-wrap: wrap; gap: 8px; }
+.truncate { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.mt-1 { margin-top: 4px; } .mt-2 { margin-top: 8px; } .mt-3 { margin-top: 12px; }
+.mt-4 { margin-top: 16px; } .mt-5 { margin-top: 20px; } .mt-6 { margin-top: 24px; }
+.grid { display: grid; gap: 16px; }
+.grid--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.grid--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+.card--pad { padding: 20px; }
+
+.list-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+}
+
+textarea.field { resize: vertical; min-height: 120px; line-height: 1.5; }
+select.field { appearance: none; padding-right: 36px; background-image: none; }
+
+/* Filter bar: chips on the left, a select on the right; stacks on phone. */
+.filters { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.filters__select { width: auto; padding: 6px 12px; font-size: 13px; }
+
+.help { font-size: 12px; color: var(--faint); margin: 0; }
+
+.empty {
+  padding: 32px 20px;
+  text-align: center;
+  color: var(--muted);
+  border: 1px dashed var(--hairline);
+  border-radius: var(--radius-card);
+}
+
+.divider { border: 0; border-top: 1px solid var(--hairline); margin: 0; }
+
+.kbd {
+  font-size: 11px;
+  padding: 2px 6px;
+  border: 1px solid var(--hairline);
+  border-radius: 6px;
+  background: var(--grey-50);
+  color: var(--muted);
+}
+
+.link { color: var(--brand-violet); text-decoration: none; }
+.link:hover { text-decoration: underline; }
+
+/* --------------------------------------------------------------------------
+   Record button — the one big thing on the capture screen
+   -------------------------------------------------------------------------- */
+
+.record {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 84px;
+  height: 84px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--brand-violet);
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 150ms, transform 100ms;
+  box-shadow: 0 8px 24px -12px color-mix(in srgb, var(--brand-violet) 60%, transparent);
+}
+.record svg { width: 32px; height: 32px; stroke-width: 1.8; }
+.record:hover:not(:disabled) { background: var(--brand-violet-deep); }
+.record:active:not(:disabled) { transform: scale(0.97); }
+.record:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Recording is destructive-ish to stop, so the stop state is red. */
+.record--live { background: var(--brand-red); box-shadow: 0 8px 24px -12px color-mix(in srgb, var(--brand-red) 60%, transparent); }
+.record--live:hover:not(:disabled) { background: var(--brand-red-deep); }
+
+.live-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-pill);
+  background: var(--brand-red);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+.transcript {
+  min-height: 72px;
+  padding: 12px 14px;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-control);
+  background: var(--grey-50);
+  font-size: 14px;
+  color: var(--ink-soft);
+  white-space: pre-wrap;
+}
+.transcript:empty::before { content: attr(data-placeholder); color: var(--faint); }
+
+/* --------------------------------------------------------------------------
+   Tag input
+   -------------------------------------------------------------------------- */
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 6px 8px;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+}
+.tags:focus-within {
+  border-color: color-mix(in srgb, var(--brand-violet) 60%, white);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--brand-violet) 10%, transparent);
+}
+.tags input {
+  flex: 1;
+  min-width: 100px;
+  border: 0;
+  outline: 0;
+  padding: 4px;
+  font: inherit;
+  font-size: 14px;
+  background: transparent;
+}
+.tags .badge button {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  margin-left: 2px;
+  color: inherit;
+  cursor: pointer;
+  line-height: 1;
+  font-size: 14px;
+}
+
+/* --------------------------------------------------------------------------
+   Drawer — detail panel that slides over the list
+   -------------------------------------------------------------------------- */
+
+/* These render inside <main class="stack">; the rhythm rule must not push
+   them. Specificity has to beat `.stack > * + *` in both the theme and the
+   phone block below. */
+.stack > .drawer-backdrop, .stack > .drawer, .stack > .toast { margin: 0; }
+
+.drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: rgb(20 22 28 / 0.28);
+}
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
+  width: min(560px, 100%);
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border-left: 1px solid var(--hairline);
+}
+.drawer__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--hairline);
+}
+.drawer__body { flex: 1; overflow: auto; padding: 20px; }
+.drawer__foot {
+  display: flex;
+  gap: 8px;
+  padding: 12px 20px;
+  border-top: 1px solid var(--hairline);
+}
+
+/* --------------------------------------------------------------------------
+   Toast
+   -------------------------------------------------------------------------- */
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  z-index: 60;
+  transform: translateX(-50%);
+  padding: 8px 14px;
+  border-radius: var(--radius-pill);
+  background: var(--ink);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: var(--shadow-hover);
+}
+@media (max-width: 767px) {
+  .toast { bottom: calc(84px + env(safe-area-inset-bottom)); }
+}
+
+/* --------------------------------------------------------------------------
+   Phone — sidebar becomes a bottom tab bar
+   -------------------------------------------------------------------------- */
+
+.tabbar { display: none; }
+
+@media (max-width: 767px) {
+  .sidebar { display: none; }
+  .content { padding: 16px 16px calc(72px + env(safe-area-inset-bottom)); }
+  .topbar { padding: 10px 16px; }
+  .grid--2, .grid--3, .grid--4 { grid-template-columns: 1fr; }
+  .stack > * + * { margin-top: 24px; }
+  .filters__select { flex: 1 1 100%; width: 100%; }
+  .hide-phone { display: none !important; }
+
+  .tabbar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 30;
+    display: flex;
+    justify-content: space-around;
+    padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
+    background: var(--surface);
+    border-top: 1px solid var(--hairline);
+  }
+  .tabbar__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 6px 10px;
+    border-radius: var(--radius-chip);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted);
+    text-decoration: none;
+  }
+  .tabbar__item svg { width: 22px; height: 22px; stroke-width: 1.8; }
+  .tabbar__item--active { color: var(--ink); background: var(--grey-100); }
+}
+
+@media (min-width: 768px) {
+  .hide-desktop { display: none !important; }
+}
