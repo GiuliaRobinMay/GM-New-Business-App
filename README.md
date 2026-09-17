@@ -29,8 +29,9 @@ First time: follow `supabase/README.md` (create project, run the schema,
 make your account). Ten minutes, once.
 
 `npm run build` writes a static site to `app/out/`. Host that folder anywhere
-(Netlify, Vercel, GitHub Pages) and set the same two `NEXT_PUBLIC_SUPABASE_*`
-variables in the host's build environment. No server of your own.
+(it lives on Vercel: root directory `app`, framework Next.js) with the same
+two `NEXT_PUBLIC_SUPABASE_*` variables in the host's environment settings.
+No server of your own.
 
 ## Put it on your phone
 
