@@ -8,8 +8,9 @@ Giulia's backbone for a new business: a 12-chapter program / book / content
 strategy about rebuilding your life after trauma or losing everything. See
 `content/business/brief.md` for the brief in her words.
 
-Two halves: `app/` (Next.js capture app, static export, local-first) and
-`content/` (Markdown store — the real data). `design/` is the theme.
+Two halves: `app/` (Next.js capture app, static export, data in Supabase)
+and `content/` (Markdown store — what Claude reads and works with).
+`design/` is the theme. `supabase/` is the schema.
 
 ## When Giulia says "add this to my app"
 
@@ -40,7 +41,16 @@ node scripts/make-icons.mjs   # only after changing the brand colour
 
 - Next.js 15, App Router, TypeScript, React 19. `output: "export"` — no
   server code, no API routes. Every page is `"use client"` and talks to
-  IndexedDB via `src/lib/db.ts`.
+  Supabase via `src/lib/db.ts` (the only file that knows the row shapes).
+  `src/lib/localdb.ts` is the old IndexedDB store, kept solely for the
+  one-time migration on the Export page — do not add new callers.
+- Needs `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+  (`app/.env.local`, never committed). Without them the app renders a
+  setup card instead of crashing.
+- Auth is email + password (`src/components/AuthGate.tsx`); row-level
+  security in `supabase/migrations/0001_init.sql` does the protecting.
+- Schema changes: add a new numbered file under `supabase/migrations/`,
+  never edit `0001_init.sql` after it has run somewhere.
 - No Tailwind. Plain CSS. `app/src/app/globals.css` imports
   `design/studiolo-theme.css` and adds only layout (phone shell, record
   button, drawer). Do not restyle in component files beyond inline spacing.

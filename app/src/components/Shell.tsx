@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import { accentFor } from "@/lib/accent";
+import AuthGate, { SignOutButton } from "./AuthGate";
 import { BookIcon, DownloadIcon, GridIcon, InboxIcon, MicIcon } from "./Icons";
 import ServiceWorker from "./ServiceWorker";
 
@@ -42,8 +43,9 @@ export default function Shell({ children }: { children: ReactNode }) {
             </Link>
           ))}
         </nav>
-        <div style={{ marginTop: "auto", padding: 16 }}>
-          <p className="help">Saved on this device. Export to keep it.</p>
+        <div style={{ marginTop: "auto", padding: 16 }} className="row">
+          <p className="help grow">Saved to Supabase.</p>
+          <SignOutButton className="btn btn--quiet" />
         </div>
       </aside>
 
@@ -51,7 +53,9 @@ export default function Shell({ children }: { children: ReactNode }) {
         <header className="topbar hide-desktop">
           <strong style={{ fontSize: 15, letterSpacing: "-0.01em" }}>Backbone</strong>
         </header>
-        <main className="content stack">{children}</main>
+        <main className="content stack">
+          <AuthGate>{children}</AuthGate>
+        </main>
       </div>
 
       <nav className="tabbar" aria-label="Primary">

@@ -69,8 +69,7 @@ export default function CapturePage() {
       const ts = nowIso();
       let audioId: string | null = null;
       if (pending) {
-        audioId = newId();
-        await putAudio({ id: audioId, blob: pending.blob, mimeType: pending.mimeType, durationSec: pending.durationSec });
+        audioId = await putAudio({ id, blob: pending.blob, mimeType: pending.mimeType, durationSec: pending.durationSec });
       }
       const text = body.trim();
       await putDump({
@@ -89,6 +88,8 @@ export default function CapturePage() {
       reset();
       showToast("Saved");
       await refresh();
+    } catch (e) {
+      showToast(e instanceof Error ? e.message : "Could not save");
     } finally {
       setSaving(false);
     }

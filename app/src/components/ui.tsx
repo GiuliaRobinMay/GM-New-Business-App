@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { accentFor } from "@/lib/accent";
-import { getAudio } from "@/lib/db";
+import { getAudioUrl } from "@/lib/db";
 import { formatWhen } from "@/lib/format";
 import { CHAPTERS, chapterTitle } from "@/lib/program";
 import type { BrainDump, DumpStatus, LibraryItem, LibraryKind, LibraryStatus } from "@/lib/types";
@@ -265,16 +265,12 @@ export function Drawer({
 export function AudioPlayer({ audioId }: { audioId: string }) {
   const [url, setUrl] = useState<string | null>(null);
   useEffect(() => {
-    let objectUrl: string | null = null;
     let cancelled = false;
-    getAudio(audioId).then((clip) => {
-      if (cancelled || !clip) return;
-      objectUrl = URL.createObjectURL(clip.blob);
-      setUrl(objectUrl);
+    getAudioUrl(audioId).then((u) => {
+      if (!cancelled) setUrl(u);
     });
     return () => {
       cancelled = true;
-      if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
   }, [audioId]);
   if (!url) return null;
